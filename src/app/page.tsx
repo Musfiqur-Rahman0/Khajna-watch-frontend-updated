@@ -18,6 +18,7 @@ import { useGetPlotsQuery } from "@/redux/plot/plotApi";
 import { useGetReportsQuery } from "@/redux/report/reportApi";
 import { cn } from "@/lib/utils";
 import type { RiskLevel } from "@/lib/types";
+import SubscribeButton from "@/components/ui/SubscribeButton";
 
 export default function Home() {
   const { lang, t } = useI18n();
@@ -62,6 +63,7 @@ export default function Home() {
           >
             {t.appName}
           </motion.p>
+
           <motion.h1
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
@@ -70,6 +72,7 @@ export default function Home() {
           >
             {t.tagline}
           </motion.h1>
+          <SubscribeButton />
           <motion.p
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}

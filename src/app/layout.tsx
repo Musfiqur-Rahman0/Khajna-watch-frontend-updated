@@ -3,7 +3,8 @@ import { Providers } from "@/redux/providers";
 import { Shell } from "@/components/shell";
 import "./globals.css";
 import { cn } from "@/lib/utils";
-import { SidebarProvider } from "@/components/ui/sidebar";
+
+import RegisterSW from "@/service/register-sw";
 
 export const metadata: Metadata = {
   title: "Khajna Watch — খজনা ওয়াচ",
@@ -32,6 +33,7 @@ export default function RootLayout({
       </head>
       <body>
         <Providers>
+          <RegisterSW />
           <Shell>{children}</Shell>
         </Providers>
       </body>

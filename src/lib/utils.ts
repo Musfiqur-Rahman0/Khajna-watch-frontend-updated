@@ -50,3 +50,18 @@ export function formatRelative(iso: string, lang: "bn" | "en"): string {
   const years = Math.floor(months / 12);
   return lang === "bn" ? `${years} বছর আগে` : `${years}y ago`;
 }
+
+export function urlBase64ToUint8Array(
+  base64String: string,
+): Uint8Array<ArrayBuffer> {
+  const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
+  const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
+
+  const rawData = window.atob(base64);
+  const outputArray = new Uint8Array(rawData.length);
+
+  for (let i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i);
+  }
+  return outputArray;
+}
