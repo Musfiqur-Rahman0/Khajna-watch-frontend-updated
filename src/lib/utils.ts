@@ -58,10 +58,19 @@ export function urlBase64ToUint8Array(
   const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
 
   const rawData = window.atob(base64);
-  const outputArray = new Uint8Array(rawData.length);
+  const outputArray = new Uint8Array(new ArrayBuffer(rawData.length));
 
   for (let i = 0; i < rawData.length; ++i) {
     outputArray[i] = rawData.charCodeAt(i);
   }
   return outputArray;
+}
+
+export function getAnonId(): string {
+  let id = localStorage.getItem("anon_id");
+  if (!id) {
+    id = crypto.randomUUID();
+    localStorage.setItem("anon_id", id);
+  }
+  return id;
 }

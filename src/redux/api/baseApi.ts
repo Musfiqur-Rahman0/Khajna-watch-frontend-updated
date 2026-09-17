@@ -1,3 +1,4 @@
+import { getAnonId } from "@/lib/utils";
 import {
   createApi,
   fetchBaseQuery,
@@ -33,6 +34,16 @@ export type ApiError = {
 const rawBaseQuery = fetchBaseQuery({
   baseUrl: API_BASE,
   credentials: "include",
+  prepareHeaders: (headers) => {
+    // Server-side identity is the session cookie (already sent via
+    // credentials: "include"). This header is the fallback identity for
+    // logged-out visitors, so the backend can still tell "this plot's
+    // watcher" apart from every other anonymous browser.
+    if (typeof window !== "undefined") {
+      headers.set("x-anon-id", getAnonId());
+    }
+    return headers;
+  },
 });
 
 /**
@@ -88,6 +99,6 @@ const unwrappingBaseQuery: BaseQueryFn<
 export const baseApi = createApi({
   reducerPath: "api",
   baseQuery: unwrappingBaseQuery,
-  tagTypes: ["Plot", "Report", "Auth"],
+  tagTypes: ["Plot", "Report", "Auth", "Watchlist"],
   endpoints: () => ({}),
 });

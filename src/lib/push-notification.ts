@@ -1,6 +1,4 @@
-// client/app/utils/push.ts
-
-import { urlBase64ToUint8Array } from "./utils";
+import { getAnonId, urlBase64ToUint8Array } from "./utils";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -25,17 +23,21 @@ export async function registerPush() {
   const existing = await registration.pushManager.getSubscription();
   if (existing) return existing;
 
-  const keyRes = await fetch(`${API_BASE_URL}/vapid-public-key`);
-  const { publicKey } = await keyRes.json();
+  const keyRes = await fetch(`${API_BASE_URL}/notifications/vapid-public-key`);
+  const { data } = await keyRes.json();
 
   const subscription = await registration.pushManager.subscribe({
     userVisibleOnly: true,
-    applicationServerKey: urlBase64ToUint8Array(publicKey),
+    applicationServerKey: urlBase64ToUint8Array(data.publicKey),
   });
 
-  await fetch(`${API_BASE_URL}/subscribe`, {
+  await fetch(`${API_BASE_URL}/notifications/subscribe`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+      "x-anon-id": getAnonId(),
+    },
     body: JSON.stringify(subscription),
   });
 

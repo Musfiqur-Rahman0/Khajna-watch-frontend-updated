@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { AnimatePresence, motion } from "motion/react";
+import { toast } from "sonner";
 import { Eye, EyeOff, Flag, Printer } from "lucide-react";
 import { SubmitReportDialog } from "@/components/submit-report-dialog";
 import { PlotDetailSkeleton } from "@/components/loading-skeletons";
@@ -29,6 +30,11 @@ import { formatArea, formatBdt, formatShare, cn } from "@/lib/utils";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { useGetPlotByCodeQuery, useGetPlotsQuery } from "@/redux/plot/plotApi";
 import { toggleWatch } from "@/redux/watchlist/watchlistSlice";
+import {
+  useAddToWatchlistMutation,
+  useRemoveFromWatchlistMutation,
+} from "@/redux/watchlist/watchlistApi";
+import { registerPush } from "@/lib/push-notification";
 import Owners from "@/components/Owners";
 import Mutations from "@/components/Mutations";
 import Receipts from "@/components/Receipts";
@@ -48,6 +54,8 @@ export default function PlotPage() {
 
   const { data: detail, isLoading, isError } = useGetPlotByCodeQuery(code);
   const { data: allPlots = [] } = useGetPlotsQuery();
+  const [addToWatchlist] = useAddToWatchlistMutation();
+  const [removeFromWatchlist] = useRemoveFromWatchlistMutation();
 
   const dossier = useMemo(() => {
     if (!detail) return null;
@@ -57,7 +65,7 @@ export default function PlotPage() {
     return { ...getPlot(detail), nearby };
   }, [detail, allPlots]);
 
-  console.log("plot details", dossier);
+  // console.log("plot details", dossier);
 
   if (isLoading) {
     return <PlotDetailSkeleton />;
@@ -75,7 +83,33 @@ export default function PlotPage() {
     );
   }
 
-  const watching = watchedCodes.includes(dossier.code);
+  const watching = watchedCodes.includes(dossier.code.trim().toLowerCase());
+
+  const handleToggleWatch = async () => {
+    // Local "starred" list — drives the /watch bookmarks page, unchanged.
+    dispatch(toggleWatch(dossier.code));
+
+    // Real backend watchlist — this is what actually makes push
+    // notifications fire for this plot.
+    try {
+      if (watching) {
+        await removeFromWatchlist(dossier.id).unwrap();
+        toast.success(t.watchRemove);
+      } else {
+        await addToWatchlist(dossier.id).unwrap();
+        toast.success(t.watchAdd);
+        // First time watching something is the natural moment to also
+        // ask for notification permission, if not already granted.
+        registerPush().catch(() => {
+          // Permission denied or unsupported — the watchlist entry still
+          // saved, so don't block the user over this.
+        });
+      }
+    } catch (err) {
+      console.error("Failed to update watchlist on the server:", err);
+      toast.error("Couldn't update your watchlist. Please try again.");
+    }
+  };
   const mouza = lang === "bn" ? dossier.mouzaBn : dossier.mouza;
   const district = lang === "bn" ? dossier.districtBn : dossier.district;
   const upazila = lang === "bn" ? dossier.upazilaBn : dossier.upazila;
@@ -106,7 +140,7 @@ export default function PlotPage() {
         <div className="flex flex-wrap gap-2">
           <Button
             variant="outline"
-            onClick={() => dispatch(toggleWatch(dossier.code))}
+            onClick={handleToggleWatch}
             className="no-print"
           >
             {watching ? <EyeOff /> : <Eye />}

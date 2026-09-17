@@ -17,7 +17,7 @@ export type ReportSummaryApi = {
   status: ReportStatus;
   yesVotes: number;
   noVotes: number;
-  myVote : string;
+  myVote: string;
   confirmedAt: string | null;
   rejectedAt: string | null;
   createdAt: string;

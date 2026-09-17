@@ -1,7 +1,7 @@
 export type RiskLevel = "green" | "amber" | "red";
 // Not an enforced Prisma enum — Plot.khajnaStatus is a free-text column.
 // These are the only values the seed/backend actually writes today.
-export type KhajnaStatus = "Paid" | "Pending" | "Partial";
+export type KhajnaStatus = "Paid" | "Pending" | "Partial" | "unknown";
 export type Possession = "matches" | "other" | "vacant" | "uncertain";
 export type CourtHint = "none" | "rumored" | "pending";
 export type OwnerRole = "recorded" | "claimed" | "deceased" | "heir";

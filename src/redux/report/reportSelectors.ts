@@ -23,7 +23,6 @@ function normalizeStatus(status: string): CommunityReportView["status"] {
   if (status === "rejected") return "rejected";
   if (status === "submitted") return "submitted";
   if (status === "under_consideration") return "under_consideration";
-  if (status === "locked") return "locked";
   return "submitted";
 }
 
@@ -33,13 +32,16 @@ export function getReports(
   plots: PlotSummaryApi[] = [],
 ): CommunityReportView[] {
   const q = (filters.q ?? "").trim().toLowerCase();
-  const reason = filters.reason && filters.reason !== "all" ? filters.reason : undefined;
-  const status = filters.status && filters.status !== "all" ? filters.status : undefined;
+  const reason =
+    filters.reason && filters.reason !== "all" ? filters.reason : undefined;
+  const status =
+    filters.status && filters.status !== "all" ? filters.status : undefined;
 
   const views = reports.map((report) => {
     const plot = plots.find((p) => p.id === report.plotId) ?? null;
     const totalVotes = report.yesVotes + report.noVotes;
-    const yesPercent = totalVotes === 0 ? 0 : Math.round((report.yesVotes / totalVotes) * 100);
+    const yesPercent =
+      totalVotes === 0 ? 0 : Math.round((report.yesVotes / totalVotes) * 100);
     const basePlot = plot
       ? ({
           id: plot.id,
@@ -91,7 +93,11 @@ export function getReports(
   });
 
   return views.filter((r) => {
-    if (q && !(`${r.description} ${r.reason} ${r.plotCode}`.toLowerCase().includes(q))) return false;
+    if (
+      q &&
+      !`${r.description} ${r.reason} ${r.plotCode}`.toLowerCase().includes(q)
+    )
+      return false;
     if (reason && r.reason !== reason) return false;
     if (status && r.status !== normalizeStatus(status)) return false;
     return true;
