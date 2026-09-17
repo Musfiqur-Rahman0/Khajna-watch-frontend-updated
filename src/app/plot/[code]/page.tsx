@@ -94,10 +94,10 @@ export default function PlotPage() {
     try {
       if (watching) {
         await removeFromWatchlist(dossier.id).unwrap();
-        toast.success(t.watchRemove);
+        toast.success(t.watchToastRemove);
       } else {
         await addToWatchlist(dossier.id).unwrap();
-        toast.success(t.watchAdd);
+        toast.success(t.watchToast);
         // First time watching something is the natural moment to also
         // ask for notification permission, if not already granted.
         registerPush().catch(() => {
