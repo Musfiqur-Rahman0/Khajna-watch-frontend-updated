@@ -5,7 +5,7 @@ export type LangState = {
 };
 
 const initialState: LangState = {
-  lang: "en",
+  lang: "bn",
 };
 
 const langSlice = createSlice({

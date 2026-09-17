@@ -27,11 +27,10 @@ import { useI18n } from "@/lib/i18n";
 import { getPlot, plotToSummary } from "@/lib/selectors";
 import type { PlotDossier } from "@/lib/types";
 import { formatArea, formatBdt, formatShare, cn } from "@/lib/utils";
-import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { useGetPlotByCodeQuery, useGetPlotsQuery } from "@/redux/plot/plotApi";
-import { toggleWatch } from "@/redux/watchlist/watchlistSlice";
 import {
   useAddToWatchlistMutation,
+  useGetWatchStatusQuery,
   useRemoveFromWatchlistMutation,
 } from "@/redux/watchlist/watchlistApi";
 import { registerPush } from "@/lib/push-notification";
@@ -47,8 +46,6 @@ export default function PlotPage() {
   const params = useParams<{ code: string }>();
   const code = String(params.code ?? "");
   const { lang, t } = useI18n();
-  const dispatch = useAppDispatch();
-  const watchedCodes = useAppSelector((s) => s.watchlist.codes);
 
   const [tab, setTab] = useState<TabId>("owners");
 
@@ -56,6 +53,9 @@ export default function PlotPage() {
   const { data: allPlots = [] } = useGetPlotsQuery();
   const [addToWatchlist] = useAddToWatchlistMutation();
   const [removeFromWatchlist] = useRemoveFromWatchlistMutation();
+  const { data: watchStatus } = useGetWatchStatusQuery(detail?.id ?? 0, {
+    skip: !detail,
+  });
 
   const dossier = useMemo(() => {
     if (!detail) return null;
@@ -65,7 +65,7 @@ export default function PlotPage() {
     return { ...getPlot(detail), nearby };
   }, [detail, allPlots]);
 
-  // console.log("plot details", dossier);
+  console.log("plot details", dossier);
 
   if (isLoading) {
     return <PlotDetailSkeleton />;
@@ -83,21 +83,19 @@ export default function PlotPage() {
     );
   }
 
-  const watching = watchedCodes.includes(dossier.code.trim().toLowerCase());
+  const watching = watchStatus?.watching ?? false;
 
   const handleToggleWatch = async () => {
-    // Local "starred" list — drives the /watch bookmarks page, unchanged.
-    dispatch(toggleWatch(dossier.code));
-
-    // Real backend watchlist — this is what actually makes push
-    // notifications fire for this plot.
+    // No manual state flip needed here — addToWatchlist/removeFromWatchlist
+    // both invalidate the "Watchlist" tag for this plotId, so
+    // useGetWatchStatusQuery above refetches and `watching` updates itself.
     try {
       if (watching) {
         await removeFromWatchlist(dossier.id).unwrap();
-        toast.success(t.watchToastRemove);
+        toast.success(t.watchRemove);
       } else {
         await addToWatchlist(dossier.id).unwrap();
-        toast.success(t.watchToast);
+        toast.success(t.watchAdd);
         // First time watching something is the natural moment to also
         // ask for notification permission, if not already granted.
         registerPush().catch(() => {

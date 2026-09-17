@@ -10,7 +10,7 @@ import { store } from "@/redux/store";
 import { hydrate } from "@/redux/watchlist/watchlistSlice";
 
 const WATCHLIST_KEY = "khajna-watch:watchlist";
-const LANG_KEY = "khajna-watch:lang";
+const LANG_KEY = "khajna-watch:lang:v2";
 
 function Persistence() {
   const didHydrate = useRef(false);
