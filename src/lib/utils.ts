@@ -37,19 +37,7 @@ export function formatShare(ana: number | string, lang: "bn" | "en"): string {
   return lang === "bn" ? `${value} আনা` : `${value} ana`;
 }
 
-export function formatRelative(iso: string, lang: "bn" | "en"): string {
-  const then = new Date(iso).getTime();
-  const now = Date.now();
-  const days = Math.max(0, Math.floor((now - then) / 86400000));
-  if (days === 0) return lang === "bn" ? "আজ" : "Today";
-  if (days === 1) return lang === "bn" ? "গতকাল" : "Yesterday";
-  if (days < 30) return lang === "bn" ? `${days} দিন আগে` : `${days}d ago`;
-  const months = Math.floor(days / 30);
-  if (months < 12)
-    return lang === "bn" ? `${months} মাস আগে` : `${months}mo ago`;
-  const years = Math.floor(months / 12);
-  return lang === "bn" ? `${years} বছর আগে` : `${years}y ago`;
-}
+
 
 export function urlBase64ToUint8Array(
   base64String: string,
@@ -73,4 +61,24 @@ export function getAnonId(): string {
     localStorage.setItem("anon_id", id);
   }
   return id;
+}
+
+export function formatRelative(iso: string, lang: "bn" | "en"): string {
+  const then = new Date(iso).getTime();
+  const now = Date.now();
+  const minutes = Math.floor(Math.max(0, now - then) / 60000);
+
+  if (minutes < 1) return lang === "bn" ? "এইমাত্র" : "Just now";
+  if (minutes < 60) return lang === "bn" ? `${minutes} মিনিট আগে` : `${minutes}m ago`;
+
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return lang === "bn" ? `${hours} ঘন্টা আগে` : `${hours}h ago`;
+
+  const days = Math.floor(hours / 24);
+  if (days === 1) return lang === "bn" ? "গতকাল" : "Yesterday";
+  if (days < 30) return lang === "bn" ? `${days} দিন আগে` : `${days}d ago`;
+  const months = Math.floor(days / 30);
+  if (months < 12) return lang === "bn" ? `${months} মাস আগে` : `${months}mo ago`;
+  const years = Math.floor(months / 12);
+  return lang === "bn" ? `${years} বছর আগে` : `${years}y ago`;
 }
