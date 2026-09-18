@@ -70,6 +70,16 @@ export function ReportCard({ report }: { report: CommunityReportView }) {
     }
   }
 
+  const votingLocked =
+    locked ||
+    report.status === "rejected" ||
+    report.status === "confirmed" ||
+    voting;
+  const yesDisabled =
+    votingLocked || report.myVote ? report.myVote !== "no" : false;
+  const noDisabled =
+    votingLocked || report.myVote ? report.myVote !== "yes" : false;
+
   console.log("report vote ", report.myVote);
 
   return (
@@ -143,15 +153,7 @@ export function ReportCard({ report }: { report: CommunityReportView }) {
       <div className="mt-4 flex items-center gap-2">
         <button
           type="button"
-          disabled={
-            locked ||
-            report.status === "rejected" ||
-            report.status === "confirmed" ||
-            voting ||
-            report.myVote
-              ? report.myVote !== "no"
-              : false
-          }
+          disabled={yesDisabled}
           onClick={() => handleVote("yes")}
           className={cn(
             "inline-flex h-9 flex-1 cursor-pointer items-center justify-center gap-2 rounded-md text-sm font-medium transition-colors duration-150 disabled:pointer-events-none disabled:opacity-50",
@@ -166,15 +168,7 @@ export function ReportCard({ report }: { report: CommunityReportView }) {
         </button>
         <button
           type="button"
-          disabled={
-            locked ||
-            report.status === "rejected" ||
-            report.status === "confirmed" ||
-            voting ||
-            report.myVote
-              ? report.myVote !== "no"
-              : false
-          }
+          disabled={noDisabled}
           onClick={() => handleVote("no")}
           className={cn(
             "inline-flex h-9 flex-1 items-center justify-center gap-2 rounded-md text-sm font-medium transition-colors duration-150 disabled:pointer-events-none disabled:opacity-50",

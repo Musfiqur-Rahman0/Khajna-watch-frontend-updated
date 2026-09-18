@@ -72,7 +72,7 @@ export default function Home() {
           >
             {t.tagline}
           </motion.h1>
-          <SubscribeButton />
+          {/* <SubscribeButton /> */}
           <motion.p
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
