@@ -21,6 +21,7 @@ import {
 } from "./ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "./ui/avatar";
 import { LogOut, UserRound } from "lucide-react";
+import { NotificationsMenu } from "./notifications-menu";
 
 export function Shell({ children }: { children: React.ReactNode }) {
   const { lang, toggleLang, t } = useI18n();
@@ -42,19 +43,9 @@ export function Shell({ children }: { children: React.ReactNode }) {
       match: (p: string) => p === "/" || p.startsWith("/plot"),
     },
     {
-      to: "/watch",
-      label: t.nav.watch,
-      match: (p: string) => p.startsWith("/watch"),
-    },
-    {
       to: "/reports",
       label: t.nav.reports,
       match: (p: string) => p.startsWith("/reports"),
-    },
-    {
-      to: "/guide",
-      label: t.nav.guide,
-      match: (p: string) => p.startsWith("/guide"),
     },
   ] as const;
 
@@ -84,6 +75,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
               </Link>
             ))}
           </nav>
+
           <Button
             variant="outline"
             size="sm"
@@ -93,6 +85,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
           >
             {t.langToggle}
           </Button>
+
           {user ? (
             <NavUser
               user={user}
@@ -107,6 +100,8 @@ export function Shell({ children }: { children: React.ReactNode }) {
               Login
             </Link>
           )}
+
+          <NotificationsMenu />
         </div>
         <nav className="flex border-t border-line sm:hidden">
           {links.map((l) => (
@@ -155,6 +150,8 @@ const NavUser = ({
     .slice(0, 2)
     .toUpperCase();
 
+  console.log("initals user", initials, user);
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
@@ -162,14 +159,19 @@ const NavUser = ({
           <Button
             size="icon-lg"
             variant="ghost"
-            className="ml-auto rounded-full data-popup-open:bg-paper-2 data-popup-open:text-ink sm:ml-1"
+            className="ml-auto rounded-full  data-popup-open:text-ink sm:ml-1 bg-transparent"
             aria-label="Open user menu"
           />
         }
       >
-        <Avatar className="size-8">
-          <AvatarFallback aria-label={`User avatar for ${user.name}`}>
-            <UserRound className="size-4" />
+        <Avatar
+          className="size-8
+      "
+        >
+          <AvatarFallback
+            aria-label={`User avatar for text-green-700 ${user.name}`}
+          >
+            <UserRound className="size-5 text-green-700 font-bold" />
           </AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
@@ -182,13 +184,15 @@ const NavUser = ({
         <DropdownMenuGroup>
           <DropdownMenuLabel className="p-0 font-normal">
             <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-              <Avatar className="size-8 rounded-lg">
-                <AvatarFallback className="rounded-lg">
+              <Avatar className="size-8 rounded-lg overflow-hidden">
+                <AvatarFallback className="rounded-lg  text-green-700 font-bold text-xl overflow-hidden aspect-square">
                   {initials}
                 </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{user.name}</span>
+                <span className="truncate font-medium text-primary uppercase">
+                  {user.name}
+                </span>
                 <span className="truncate text-xs text-subtle">
                   {user.email}
                 </span>
@@ -197,8 +201,12 @@ const NavUser = ({
           </DropdownMenuLabel>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={onLogout} disabled={loggingOut}>
-          <LogOut className="mr-2 size-4" />
+        <DropdownMenuItem
+          className="cursor-pointer"
+          onClick={onLogout}
+          disabled={loggingOut}
+        >
+          <LogOut className="mr-2 size-4 cursor-pointer" />
           {loggingOut ? "Logging out..." : "Log out"}
         </DropdownMenuItem>
       </DropdownMenuContent>

@@ -36,7 +36,7 @@ export function plotToSummary(plot: PlotSummaryApi): PlotSummary {
     riskLevel: plot.riskLevel,
     courtHint: plot.courtHint,
     mortgaged: plot.mortgaged,
-    flagCount: plot._count.flags,
+    flagCount: plot._count?.flags || 0,
     ownerLabel: "",
     ownerLabelBn: "",
   };

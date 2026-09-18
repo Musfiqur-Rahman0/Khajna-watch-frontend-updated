@@ -86,7 +86,7 @@ const unwrappingBaseQuery: BaseQueryFn<
     return { error: { message } };
   }
 
-  return { data: payload.data };
+  return { data: payload.data, meta: payload.meta };
 };
 
 /**
@@ -99,6 +99,6 @@ const unwrappingBaseQuery: BaseQueryFn<
 export const baseApi = createApi({
   reducerPath: "api",
   baseQuery: unwrappingBaseQuery,
-  tagTypes: ["Plot", "Report", "Auth", "Watchlist"],
+  tagTypes: ["Plot", "Report", "Auth", "Watchlist", "Notification"],
   endpoints: () => ({}),
 });
