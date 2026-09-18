@@ -30,15 +30,65 @@ export type VoteReportArgs = {
   vote: "yes" | "no";
 };
 
+export type ReportListResult = {
+  items: ReportSummaryApi[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+};
+
 export const reportApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     /** Omit plotId to fetch every report across all plots (used on /reports). */
-    getReports: builder.query<ReportSummaryApi[], number | void>({
-      query: (plotId) => (plotId ? `/plots/${plotId}/reports` : "/reports"),
+    getReports: builder.query<
+      ReportListResult,
+      { plotId?: number; page?: number; limit?: number } | number | void
+    >({
+      query: (arg) => {
+        // Accept a bare number for backward compatibility with existing
+        // callers like useGetReportsQuery(plotId).
+        const params = typeof arg === "number" ? { plotId: arg } : arg;
+        if (params?.plotId) {
+          return `/plots/${params.plotId}/reports`;
+        }
+        return {
+          url: "/reports",
+          params: { page: params?.page, limit: params?.limit },
+        };
+      },
+      // /reports returns { items, pagination } via meta; /plots/:id/reports
+      // returns a bare array with no meta at all. Handle both here so
+      // callers always get the same { items, pagination } shape back.
+      transformResponse: (
+        response: ReportSummaryApi[],
+        meta,
+      ): ReportListResult => {
+        const m = meta as unknown as {
+          pagination?: ReportListResult["pagination"];
+        };
+        if (m?.pagination) {
+          return { items: response, pagination: m.pagination };
+        }
+        return {
+          items: response,
+          pagination: {
+            page: 1,
+            limit: response.length,
+            total: response.length,
+            totalPages: 1,
+          },
+        };
+      },
       providesTags: (result) =>
         result
           ? [
-              ...result.map((r) => ({ type: "Report" as const, id: r.id })),
+              ...result.items.map((r) => ({
+                type: "Report" as const,
+                id: r.id,
+              })),
               { type: "Report" as const, id: "LIST" },
             ]
           : [{ type: "Report" as const, id: "LIST" }],

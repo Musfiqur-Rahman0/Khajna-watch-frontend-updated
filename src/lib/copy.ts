@@ -95,19 +95,30 @@ export const copy = {
     en: "Plot successfully removed from the watchlist",
   },
   watchRemove: { bn: "নজর সরান", en: "Remove watch" },
+  watchView: { bn: "নজরে রাখা প্লটগুলো", en: "View Watchlist" },
+  watchGuide: { bn: "গাইড দেখুন", en: "View Guide" },
   notifTitle: { bn: "বিজ্ঞপ্তি", en: "Notifications" },
-notifLead: {
-  bn: "আপনার নজরে রাখা প্লটগুলোর সাম্প্রতিক আপডেট।",
-  en: "Recent updates on the plots you're watching.",
-},
-notifTabUnread: { bn: "অপঠিত", en: "Unread" },
-notifTabAll: { bn: "সব", en: "All" },
-notifMarkAllRead: { bn: "সব পঠিত করুন", en: "Mark all as read" },
-notifEmptyUnread: {
-  bn: "কোনো অপঠিত বিজ্ঞপ্তি নেই।",
-  en: "No unread notifications.",
-},
-notifEmptyAll: { bn: "এখনো কোনো বিজ্ঞপ্তি নেই।", en: "No notifications yet." },
+  notifLead: {
+    bn: "আপনার নজরে রাখা প্লটগুলোর সাম্প্রতিক আপডেট।",
+    en: "Recent updates on the plots you're watching.",
+  },
+  notifTabUnread: { bn: "অপঠিত", en: "Unread" },
+  notifTabAll: { bn: "সব", en: "All" },
+  newNotification : {bn : "প্লটটিতে নতুন  রিপোর্ট যোগ হয়েছে", en : "New report on a watch plot" },
+  notifMarkAllRead: { bn: "সব পঠিত করুন", en: "Mark all as read" },
+  notifEmptyUnread: {
+    bn: "কোনো অপঠিত বিজ্ঞপ্তি নেই।",
+    en: "No unread notifications.",
+  },
+  notifEmptyAll: {
+    bn: "এখনো কোনো বিজ্ঞপ্তি নেই।",
+    en: "No notifications yet.",
+  },
+  viewAllNotification: {
+    bn: "সব বিজ্ঞপ্তি দেখুন",
+    en: "View all notifications",
+  },
+
   printPack: { bn: "অফিস প্যাক প্রিন্ট", en: "Print office pack" },
   flagCta: { bn: "সতর্কতা দিন", en: "Raise a flag" },
   flagTitle: { bn: "এই দাগে সতর্কতা", en: "Flag this dag" },

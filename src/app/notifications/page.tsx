@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
   Bell,
@@ -21,6 +21,7 @@ import {
   useMarkAllNotificationsReadMutation,
   useMarkNotificationReadMutation,
 } from "@/redux/notification/notificationApi";
+import { Pagination } from "@/components/pagination";
 
 type Tab = "all" | "unread";
 
@@ -47,13 +48,29 @@ export default function NotificationsPage() {
   const { t, lang } = useI18n();
   const router = useRouter();
   const [tab, setTab] = useState<Tab>("all");
+  const [page, setPage] = useState(1);
 
-  const { data, isLoading } = useGetNotificationsQuery();
+  const { data, isLoading } = useGetNotificationsQuery(
+    { limit: 10, page },
+    {
+      refetchOnFocus: true,
+      refetchOnReconnect: true,
+    },
+  );
   const [markRead] = useMarkNotificationReadMutation();
   const [markAllRead] = useMarkAllNotificationsReadMutation();
 
   const items = data?.items ?? [];
   const unreadCount = data?.unreadCount ?? 0;
+
+  interface Meta {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  }
+
+  const meta: Meta | undefined = data?.pagination;
 
   const visible = useMemo(
     () => (tab === "unread" ? items.filter((n) => !n.isRead) : items),
@@ -67,7 +84,7 @@ export default function NotificationsPage() {
 
   return (
     <main className="mx-auto max-w-2xl px-4 py-10">
-      <div className="flex items-center justify-between">
+      <div className="mt-10">
         <div className="flex items-start gap-4 max-w-[40rem]">
           <div>
             <h1 className="font-display text-3xl sm:text-4xl">
@@ -165,6 +182,13 @@ export default function NotificationsPage() {
             </Card>
           );
         })}
+
+        <Pagination
+          page={meta?.page as number}
+          totalPages={meta?.totalPages as number}
+          onPageChange={setPage}
+          className="mt-5"
+        />
       </div>
     </main>
   );

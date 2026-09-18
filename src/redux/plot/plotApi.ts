@@ -102,6 +102,32 @@ export type PlotDetailApi = PlotSummaryApi & {
   checklist?: ChecklistItem[];
 };
 
+export type PlotSearchParams = {
+  search?: string;
+  district?: string;
+  riskLevel?: "green" | "amber" | "red";
+  page?: number;
+  limit?: number;
+  sort?: "updated" | "risk";
+};
+
+export type PlotListResult = {
+  items: PlotSummaryApi[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+};
+
+export type PlotStats = {
+  plots: number;
+  red: number;
+  overdue: number;
+  flags: number;
+};
+
 export const plotApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getPlots: builder.query<PlotSummaryApi[], void>({
@@ -115,6 +141,32 @@ export const plotApi = baseApi.injectEndpoints({
           : [{ type: "Plot" as const, id: "LIST" }],
     }),
 
+    /** Server-side filtered + paginated — used by the home page search/results. */
+    searchPlots: builder.query<PlotListResult, PlotSearchParams | void>({
+      query: (params) => ({ url: "/plots", params: params ?? {} }),
+      transformResponse: (response: PlotSummaryApi[], meta): PlotListResult => {
+        const m = meta as unknown as {
+          pagination: PlotListResult["pagination"];
+        };
+        return { items: response, pagination: m.pagination };
+      },
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.items.map((plot) => ({
+                type: "Plot" as const,
+                id: plot.id,
+              })),
+              { type: "Plot" as const, id: "LIST" },
+            ]
+          : [{ type: "Plot" as const, id: "LIST" }],
+    }),
+
+    getPlotStats: builder.query<PlotStats, void>({
+      query: () => "/plots/stats",
+      providesTags: [{ type: "Plot", id: "STATS" }],
+    }),
+
     getPlotByCode: builder.query<PlotDetailApi, string>({
       query: (code) => `/plots/code/${encodeURIComponent(code)}`,
       providesTags: (_result, _error, code) => [{ type: "Plot", id: code }],
@@ -123,4 +175,9 @@ export const plotApi = baseApi.injectEndpoints({
   overrideExisting: false,
 });
 
-export const { useGetPlotsQuery, useGetPlotByCodeQuery } = plotApi;
+export const {
+  useGetPlotsQuery,
+  useSearchPlotsQuery,
+  useGetPlotStatsQuery,
+  useGetPlotByCodeQuery,
+} = plotApi;

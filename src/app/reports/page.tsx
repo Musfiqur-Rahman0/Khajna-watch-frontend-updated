@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { motion } from "motion/react";
 import { Search } from "lucide-react";
 import { ReportCard } from "@/components/report-card";
@@ -20,12 +20,18 @@ import { useGetPlotsQuery } from "@/redux/plot/plotApi";
 import { useGetReportsQuery } from "@/redux/report/reportApi";
 import { cn } from "@/lib/utils";
 import type { FlagReason, ReportStatus } from "@/lib/types";
+import { Pagination } from "@/components/pagination";
 
 export default function ReportsPage() {
   const { lang, t } = useI18n();
+  const [page, setPage] = useState(1);
   const { data: plots = [] } = useGetPlotsQuery();
-  const { data: reports = [], isFetching: reportsLoading } =
-    useGetReportsQuery();
+  const { data, isFetching: reportsLoading } = useGetReportsQuery({
+    limit: 10,
+    page,
+  });
+  const reports = data?.items ?? [];
+
   const [q, setQ] = useState("");
   const [reason, setReason] = useState<FlagReason | "all">("all");
   const [status, setStatus] = useState<ReportStatus | "all">("all");
@@ -35,6 +41,18 @@ export default function ReportsPage() {
     () => getReports({ q, reason, status, sort }, reports, plots),
     [q, reason, status, sort, reports, plots],
   );
+  interface Meta {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  }
+
+  const meta: Meta | undefined = data?.pagination;
+
+  useEffect(() => {
+    setPage(1);
+  }, [q, reason, status, sort]);
 
   return (
     <main className="mx-auto max-w-4xl px-4 py-10">
@@ -132,11 +150,19 @@ export default function ReportsPage() {
       ) : reportViews.length === 0 ? (
         <p className="mt-10 max-w-lg text-muted">{t.reportEmpty}</p>
       ) : (
-        <ul className="mt-6 space-y-3">
-          {reportViews.map((r) => (
-            <ReportCard key={r.id} report={r} />
-          ))}
-        </ul>
+        <>
+          <ul className="mt-6 space-y-3">
+            {reportViews.map((r) => (
+              <ReportCard key={r.id} report={r} />
+            ))}
+          </ul>
+          <Pagination
+            page={meta?.page as number}
+            totalPages={meta?.totalPages as number}
+            onPageChange={setPage}
+            className="mt-5"
+          />
+        </>
       )}
     </main>
   );

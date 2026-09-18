@@ -5,8 +5,9 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
-  --font-sans: "Hind Siliguri", "Segoe UI", system-ui, sans-serif;
-  --font-display: "Newsreader", "Hind Siliguri", serif;
+  --font-sans:
+    "IBM Plex Sans", "IBM Plex Sans Bengali", "Segoe UI", system-ui, sans-serif;
+  --font-display: "Newsreader", "IBM Plex Sans Bengali", serif;
 
   --color-paper: #f3efe6;
   --color-paper-2: #ebe6db;

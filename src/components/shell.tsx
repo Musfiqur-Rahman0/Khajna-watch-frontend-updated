@@ -150,7 +150,7 @@ const NavUser = ({
     .slice(0, 2)
     .toUpperCase();
 
-  console.log("initals user", initials, user);
+
 
   return (
     <DropdownMenu>

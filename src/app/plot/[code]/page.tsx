@@ -65,7 +65,7 @@ export default function PlotPage() {
     return { ...getPlot(detail), nearby };
   }, [detail, allPlots]);
 
-  console.log("plot details", dossier);
+ 
 
   if (isLoading) {
     return <PlotDetailSkeleton />;

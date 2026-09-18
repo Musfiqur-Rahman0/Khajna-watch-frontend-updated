@@ -80,7 +80,7 @@ export function ReportCard({ report }: { report: CommunityReportView }) {
   const noDisabled =
     votingLocked || report.myVote ? report.myVote !== "yes" : false;
 
-  console.log("report vote ", report.myVote);
+
 
   return (
     <motion.li

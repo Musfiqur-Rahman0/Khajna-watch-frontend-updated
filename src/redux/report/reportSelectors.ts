@@ -91,8 +91,7 @@ export function getReports(
       plot: basePlot,
     } as CommunityReportView;
   });
-
-  return views.filter((r) => {
+  const filtered = views.filter((r) => {
     if (
       q &&
       !`${r.description} ${r.reason} ${r.plotCode}`.toLowerCase().includes(q)
@@ -102,4 +101,14 @@ export function getReports(
     if (status && r.status !== normalizeStatus(status)) return false;
     return true;
   });
+
+  const sorted = [...filtered].sort((a, b) => {
+    if (filters.sort === "new") {
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    }
+    if (b.yesVotes !== a.yesVotes) return b.yesVotes - a.yesVotes;
+    return b.totalVotes - a.totalVotes;
+  });
+
+  return sorted;
 }
