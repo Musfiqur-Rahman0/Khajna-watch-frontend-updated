@@ -80,9 +80,7 @@ const unwrappingBaseQuery: BaseQueryFn<
     const message =
       payload && "error" in payload
         ? payload.error.message
-        : payload && "message" in payload
-          ? payload.message
-          : "Request failed";
+        : (payload && "message" in payload) || "Request failed";
     return { error: { message } };
   }
 

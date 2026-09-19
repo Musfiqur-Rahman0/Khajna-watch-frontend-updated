@@ -145,6 +145,7 @@ export type ReportStatus =
   | "confirmed"
   | "rejected"
   | "withdrawn";
+
 export type VoteType = "yes" | "no";
 
 export type CommunityReport = {

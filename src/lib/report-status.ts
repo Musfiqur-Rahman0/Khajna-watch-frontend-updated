@@ -47,7 +47,6 @@ const TIER_STATUS: readonly ReportStatus[] = [
   "submitted",
   "under_consideration",
   "confirmed",
-  "locked",
 ];
 
 export type Tier = 0 | 1 | 2 | 3;
@@ -70,7 +69,7 @@ export function statusFromTier(tier: Tier): ReportStatus {
 }
 
 export function tierFromStatus(status: ReportStatus): Tier {
-  if (status === "locked") return 3;
+  if (status === "withdrawn") return 3;
   if (status === "confirmed") return 2;
   if (status === "under_consideration") return 1;
   return 0; // submitted and rejected both start at tier 0
@@ -89,7 +88,7 @@ export function nextStatus(
   yesVotes: number,
   noVotes: number,
 ): ReportStatus {
-  if (current === "locked" || current === "rejected") return current;
+  if (current === "withdrawn" || current === "rejected") return current;
 
   const total = yesVotes + noVotes;
   const currentTier = tierFromStatus(current);
@@ -118,5 +117,5 @@ export const STATUS_RANK: Record<ReportStatus, number> = {
   under_consideration: 1,
   rejected: 1,
   confirmed: 2,
-  locked: 3,
+  withdrawn: 3,
 };
