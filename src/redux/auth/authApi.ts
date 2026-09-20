@@ -8,7 +8,7 @@ export type AuthSessionUser = {
   role?: string;
 };
 
-type AuthResponse = { user: AuthSessionUser };
+type AuthResponse = { user: AuthSessionUser; accessToken: string };
 
 export type LoginPayload = { email: string; password: string };
 export type RegisterPayload = { name: string; email: string; password: string };
@@ -20,7 +20,7 @@ export const authApi = baseApi.injectEndpoints({
       invalidatesTags: ["Auth"],
       async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
         const { data } = await queryFulfilled;
-        dispatch(setUser(data.user));
+        dispatch(setUser({ user: data.user, accessToken: data.accessToken }));
       },
     }),
 
@@ -36,7 +36,7 @@ export const authApi = baseApi.injectEndpoints({
       async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
         try {
           const { data } = await queryFulfilled;
-          dispatch(setUser(data.user));
+          dispatch(setUser({ user: data.user, accessToken: data.accessToken }));
         } catch {
           dispatch(setUser(null));
         }

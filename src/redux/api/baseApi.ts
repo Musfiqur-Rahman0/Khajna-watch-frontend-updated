@@ -5,6 +5,7 @@ import {
   type BaseQueryFn,
   type FetchArgs,
 } from "@reduxjs/toolkit/query/react";
+import type { RootState } from "@/redux/store";
 
 const API_BASE =
   process.env.NEXT_PUBLIC_API_BASE ?? "http://localhost:5000/api/v1";
@@ -34,7 +35,7 @@ export type ApiError = {
 const rawBaseQuery = fetchBaseQuery({
   baseUrl: API_BASE,
   credentials: "include",
-  prepareHeaders: (headers) => {
+  prepareHeaders: (headers, { getState }) => {
     // Server-side identity is the session cookie (already sent via
     // credentials: "include"). This header is the fallback identity for
     // logged-out visitors, so the backend can still tell "this plot's
@@ -42,6 +43,13 @@ const rawBaseQuery = fetchBaseQuery({
     if (typeof window !== "undefined") {
       headers.set("x-anon-id", getAnonId());
     }
+
+    const state = getState() as RootState;
+    const token = state.auth?.accessToken;
+    if (token) {
+      headers.set("Authorization", `Bearer ${token}`);
+    }
+
     return headers;
   },
 });
