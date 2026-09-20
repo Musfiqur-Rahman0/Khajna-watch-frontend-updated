@@ -1,5 +1,6 @@
 import { ChecklistItem } from "@/lib/types";
-import { baseApi } from "@/redux/api/baseApi";
+import { baseApi, getPaginationMeta } from "@/redux/api/baseApi";
+import type { Paginated } from "@/redux/api/types";
 
 export type PlotSummaryApi = {
   id: number;
@@ -111,15 +112,7 @@ export type PlotSearchParams = {
   sort?: "updated" | "risk";
 };
 
-export type PlotListResult = {
-  items: PlotSummaryApi[];
-  pagination: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-  };
-};
+export type PlotListResult = Paginated<PlotSummaryApi>;
 
 export type PlotStats = {
   plots: number;
@@ -135,9 +128,9 @@ export const plotApi = baseApi.injectEndpoints({
       providesTags: (result) =>
         result
           ? [
-              ...result.map((plot) => ({ type: "Plot" as const, id: plot.id })),
-              { type: "Plot" as const, id: "LIST" },
-            ]
+            ...result.map((plot) => ({ type: "Plot" as const, id: plot.id })),
+            { type: "Plot" as const, id: "LIST" },
+          ]
           : [{ type: "Plot" as const, id: "LIST" }],
     }),
 
@@ -145,20 +138,20 @@ export const plotApi = baseApi.injectEndpoints({
     searchPlots: builder.query<PlotListResult, PlotSearchParams | void>({
       query: (params) => ({ url: "/plots", params: params ?? {} }),
       transformResponse: (response: PlotSummaryApi[], meta): PlotListResult => {
-        const m = meta as unknown as {
+        const m = getPaginationMeta<{
           pagination: PlotListResult["pagination"];
-        };
+        }>(meta);
         return { items: response, pagination: m.pagination };
       },
       providesTags: (result) =>
         result
           ? [
-              ...result.items.map((plot) => ({
-                type: "Plot" as const,
-                id: plot.id,
-              })),
-              { type: "Plot" as const, id: "LIST" },
-            ]
+            ...result.items.map((plot) => ({
+              type: "Plot" as const,
+              id: plot.id,
+            })),
+            { type: "Plot" as const, id: "LIST" },
+          ]
           : [{ type: "Plot" as const, id: "LIST" }],
     }),
 

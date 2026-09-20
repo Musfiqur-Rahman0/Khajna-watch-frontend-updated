@@ -7,9 +7,6 @@ import { Toaster } from "sonner";
 import { authApi } from "@/redux/auth/authApi";
 import { setLang } from "@/redux/lang/langSlice";
 import { store } from "@/redux/store";
-import { hydrate } from "@/redux/watchlist/watchlistSlice";
-
-const WATCHLIST_KEY = "khajna-watch:watchlist";
 const LANG_KEY = "khajna-watch:lang:v2";
 
 function Persistence() {
@@ -21,8 +18,6 @@ function Persistence() {
     didHydrate.current = true;
 
     try {
-      const rawCodes = window.localStorage.getItem(WATCHLIST_KEY);
-      if (rawCodes) store.dispatch(hydrate(JSON.parse(rawCodes)));
 
       const rawLang = window.localStorage.getItem(LANG_KEY);
       if (rawLang === "bn" || rawLang === "en") {
@@ -32,16 +27,17 @@ function Persistence() {
       // ignore malformed storage
     }
 
+    let prevLang = store.getState().lang.lang;
     const unsubscribe = store.subscribe(() => {
       const state = store.getState();
-      try {
-        window.localStorage.setItem(
-          WATCHLIST_KEY,
-          JSON.stringify(state.watchlist.codes),
-        );
-        window.localStorage.setItem(LANG_KEY, state.lang.lang);
-      } catch {
-        // ignore storage errors (private mode, quota, etc.)
+      const currentLang = state.lang.lang;
+      if (prevLang !== currentLang) {
+        prevLang = currentLang;
+        try {
+          window.localStorage.setItem(LANG_KEY, currentLang);
+        } catch {
+          // ignore storage errors (private mode, quota, etc.)
+        }
       }
     });
 

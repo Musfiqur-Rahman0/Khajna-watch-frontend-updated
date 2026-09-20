@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useAppSelector } from "@/redux/store";
 import { Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -26,10 +27,12 @@ export function NotificationsMenu() {
   const router = useRouter();
   const { lang, t } = useI18n();
 
+  const user = useAppSelector((s) => s.auth.user);
+
   // limit: 5 keeps the dropdown short; unreadCount still reflects the true total.
   const { data } = useGetNotificationsQuery(
     { limit: 5 },
-    { pollingInterval: 30000 },
+    { pollingInterval: 30000, skip: !user },
   );
   const { data: watchlist } = useGetMyWatchlistQuery();
   const [markRead] = useMarkNotificationReadMutation();

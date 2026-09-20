@@ -80,7 +80,9 @@ const unwrappingBaseQuery: BaseQueryFn<
     const message =
       payload && "error" in payload
         ? payload.error.message
-        : (payload && "message" in payload) || "Request failed";
+        : (payload && "message" in payload)
+          ? (payload as any).message
+          : "Request failed";
     return { error: { message } };
   }
 
@@ -100,3 +102,10 @@ export const baseApi = createApi({
   tagTypes: ["Plot", "Report", "Auth", "Watchlist", "Notification"],
   endpoints: () => ({}),
 });
+
+/**
+ * Extracts pagination meta consistently from the unwrapped RTK Query meta.
+ */
+export function getPaginationMeta<M>(meta: unknown): M {
+  return meta as unknown as M;
+}

@@ -26,6 +26,7 @@ export const authApi = baseApi.injectEndpoints({
 
     register: builder.mutation<AuthResponse, RegisterPayload>({
       query: (body) => ({ url: "/auth/register", method: "POST", body }),
+      invalidatesTags: ["Auth"],
     }),
 
     /** Called once on app load to restore a session from the auth cookie. */

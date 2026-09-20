@@ -45,7 +45,7 @@ export const watchlistApi = baseApi.injectEndpoints({
       ],
     }),
 
-    /** Logged-in users only — the backend requires a real account for this one. */
+    /** Anonymous identity supported. */
     getMyWatchlist: builder.query<WatchlistEntry[], void>({
       query: () => "/watchlist",
       providesTags: [{ type: "Watchlist", id: "LIST" }],

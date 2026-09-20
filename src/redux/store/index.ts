@@ -9,13 +9,11 @@ import {
 import { baseApi } from "@/redux/api/baseApi";
 import authReducer from "@/redux/auth/authSlice";
 import langReducer from "@/redux/lang/langSlice";
-import watchlistReducer from "@/redux/watchlist/watchlistSlice";
 
 export const store = configureStore({
   reducer: {
     auth: authReducer,
     lang: langReducer,
-    watchlist: watchlistReducer,
     [baseApi.reducerPath]: baseApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>

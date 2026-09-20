@@ -1,4 +1,5 @@
-import { baseApi } from "../api/baseApi";
+import { baseApi, getPaginationMeta } from "../api/baseApi";
+import type { Paginated } from "../api/types";
 
 export type NotificationItem = {
   id: number;
@@ -13,15 +14,8 @@ export type NotificationItem = {
 };
 
 type ListParams = { page?: number; limit?: number; unreadOnly?: boolean };
-type ListResult = {
-  items: NotificationItem[];
+type ListResult = Paginated<NotificationItem> & {
   unreadCount: number;
-  pagination: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-  };
 };
 
 export const notificationApi = baseApi.injectEndpoints({
@@ -30,10 +24,10 @@ export const notificationApi = baseApi.injectEndpoints({
       query: (params) => ({ url: "/notifications", params: params ?? {} }),
 
       transformResponse: (res: NotificationItem[], meta) => {
-        const m = meta as unknown as {
+        const m = getPaginationMeta<{
           pagination: ListResult["pagination"];
           unreadCount: number;
-        };
+        }>(meta);
         return {
           items: res,
           unreadCount: m.unreadCount,

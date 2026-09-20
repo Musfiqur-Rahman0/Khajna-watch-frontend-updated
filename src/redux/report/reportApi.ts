@@ -1,4 +1,5 @@
-import { baseApi } from "@/redux/api/baseApi";
+import { baseApi, getPaginationMeta } from "@/redux/api/baseApi";
+import type { Paginated } from "@/redux/api/types";
 import type { FlagReason, ReportStatus } from "@/lib/types";
 
 export type ReportCreatePayload = {
@@ -17,7 +18,7 @@ export type ReportSummaryApi = {
   status: ReportStatus;
   yesVotes: number;
   noVotes: number;
-  myVote: string;
+  myVote: "yes" | "no" | null;
   confirmedAt: string | null;
   rejectedAt: string | null;
   createdAt: string;
@@ -30,15 +31,7 @@ export type VoteReportArgs = {
   vote: "yes" | "no";
 };
 
-export type ReportListResult = {
-  items: ReportSummaryApi[];
-  pagination: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-  };
-};
+export type ReportListResult = Paginated<ReportSummaryApi>;
 
 export const reportApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -66,9 +59,9 @@ export const reportApi = baseApi.injectEndpoints({
         response: ReportSummaryApi[],
         meta,
       ): ReportListResult => {
-        const m = meta as unknown as {
+        const m = getPaginationMeta<{
           pagination?: ReportListResult["pagination"];
-        };
+        }>(meta);
         if (m?.pagination) {
           return { items: response, pagination: m.pagination };
         }

@@ -26,10 +26,7 @@ export default function ReportsPage() {
   const { lang, t } = useI18n();
   const [page, setPage] = useState(1);
   const { data: plots = [] } = useGetPlotsQuery();
-  const { data, isFetching: reportsLoading } = useGetReportsQuery({
-    limit: 10,
-    page,
-  });
+  const { data, isFetching: reportsLoading } = useGetReportsQuery();
   const reports = data?.items ?? [];
 
   const [q, setQ] = useState("");
@@ -41,14 +38,8 @@ export default function ReportsPage() {
     () => getReports({ q, reason, status, sort }, reports, plots),
     [q, reason, status, sort, reports, plots],
   );
-  interface Meta {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-  }
-
-  const meta: Meta | undefined = data?.pagination;
+  const totalPages = Math.ceil(reportViews.length / 10) || 1;
+  const paginatedViews = reportViews.slice((page - 1) * 10, page * 10);
 
   useEffect(() => {
     setPage(1);
@@ -152,16 +143,18 @@ export default function ReportsPage() {
       ) : (
         <>
           <ul className="mt-6 space-y-3">
-            {reportViews.map((r) => (
+            {paginatedViews.map((r) => (
               <ReportCard key={r.id} report={r} />
             ))}
           </ul>
-          <Pagination
-            page={meta?.page as number}
-            totalPages={meta?.totalPages as number}
-            onPageChange={setPage}
-            className="mt-5"
-          />
+          {totalPages > 1 && (
+            <Pagination
+              page={page}
+              totalPages={totalPages}
+              onPageChange={setPage}
+              className="mt-5"
+            />
+          )}
         </>
       )}
     </main>
