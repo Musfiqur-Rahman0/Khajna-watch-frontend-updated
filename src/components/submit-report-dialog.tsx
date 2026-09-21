@@ -22,9 +22,6 @@ export function SubmitReportDialog({
   plotId,
   trigger,
 }: {
-  /** When given, the plot select is hidden and locked to this code — used
-   * from the plot dossier page so the report is always about the page
-   * you're already looking at. */
   plotCode?: string;
   plotId?: number;
   trigger?: React.ReactNode;
@@ -78,11 +75,13 @@ export function SubmitReportDialog({
           description: description.trim(),
         },
       }).unwrap();
+
       toast.success(t.reportOk);
       reset();
       setOpen(false);
     } catch (error) {
-      const message = (error as ApiError)?.message ?? "Could not submit report.";
+      const message =
+        (error as ApiError)?.message ?? "Could not submit report.";
       toast.error(message);
     }
   }

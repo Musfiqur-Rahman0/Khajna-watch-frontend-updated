@@ -183,12 +183,14 @@ export default function NotificationsPage() {
           );
         })}
 
-        <Pagination
-          page={meta?.page as number}
-          totalPages={meta?.totalPages as number}
-          onPageChange={setPage}
-          className="mt-5"
-        />
+        {!isLoading && (
+          <Pagination
+            page={meta?.page as number}
+            totalPages={meta?.totalPages as number}
+            onPageChange={setPage}
+            className="mt-5"
+          />
+        )}
       </div>
     </main>
   );
