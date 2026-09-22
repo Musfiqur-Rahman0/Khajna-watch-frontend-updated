@@ -49,13 +49,15 @@ export function SubmitReportDialog({
     setReason("grab_attempt");
   }
 
+
+
   async function submit() {
     if (!canSubmit) return;
 
-    if (!user) {
-      toast.warning("Please login before reporting a plot.");
-      return;
-    }
+    // if (!user) {
+    //   toast.warning("Please login before reporting a plot.");
+    //   return;
+    // }
 
     const targetPlotId =
       plotId ??
@@ -66,6 +68,7 @@ export function SubmitReportDialog({
       return;
     }
 
+    // return;
     try {
       await createReport({
         plotId: targetPlotId,

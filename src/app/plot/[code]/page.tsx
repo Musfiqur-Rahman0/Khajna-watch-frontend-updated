@@ -65,8 +65,6 @@ export default function PlotPage() {
     return { ...getPlot(detail), nearby };
   }, [detail, allPlots]);
 
- 
-
   if (isLoading) {
     return <PlotDetailSkeleton />;
   }
@@ -120,6 +118,8 @@ export default function PlotPage() {
     { id: "flags", label: t.tabFlags },
     { id: "check", label: t.tabCheck },
   ];
+
+ 
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-8 sm:py-10">

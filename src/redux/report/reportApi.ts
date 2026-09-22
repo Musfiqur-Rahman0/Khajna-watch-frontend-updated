@@ -1,6 +1,6 @@
 import { baseApi, getPaginationMeta } from "@/redux/api/baseApi";
 import type { Paginated } from "@/redux/api/types";
-import type { FlagReason, ReportStatus } from "@/lib/types";
+import type { FlagReason, PlotSummary, ReportStatus } from "@/lib/types";
 
 export type ReportCreatePayload = {
   isAnonymous?: boolean;
@@ -11,11 +11,12 @@ export type ReportCreatePayload = {
 export type ReportSummaryApi = {
   id: number;
   plotId: number;
-  plotCode: number;
+  plotCode: string;
   reporterUserId: string;
   isAnonymous: boolean;
   reason: FlagReason;
   description: string;
+  plot: PlotSummary;
   status: ReportStatus;
   yesVotes: number;
   noVotes: number;
