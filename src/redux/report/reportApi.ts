@@ -10,6 +10,7 @@ export type ReportCreatePayload = {
 
 export type ReportSummaryApi = {
   id: number;
+  plotId: number;
   plotCode: number;
   reporterUserId: string;
   isAnonymous: boolean;
