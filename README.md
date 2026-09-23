@@ -1,4 +1,4 @@
-# Khajna Watch — Frontend (Demo)
+# Khajna Watch — Frontend 
 
 A Next.js recreation of the "Khajna Watch" land-record verification tool for
 Bangladesh (khatian / dag / mutation / khajna checking), rebuilt to spec with:
